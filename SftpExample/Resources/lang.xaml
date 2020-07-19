@@ -5,4 +5,8 @@
 
     <v:String x:Key="SeSftpDownloader">Sftp downloader</v:String>
     <v:String x:Key="SeDest">Destination folder</v:String>
+    <v:String x:Key="SeBrowse">Browse</v:String>
+    <v:String x:Key="SeFailedToConnect">Failed to connect</v:String>
+    <v:String x:Key="SeName">Name</v:String>
+    <v:String x:Key="SeSize">Size</v:String>
 </ResourceDictionary>

@@ -3,6 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:v="clr-namespace:System;assembly=mscorlib">
 
-    <v:String x:Key="SeSftpDownloader">Sftp downloader</v:String>
+    <v:String x:Key="SeSftpDownloader">Sftp загрузчик</v:String>
     <v:String x:Key="SeDest">Папка скачивания</v:String>
+    <v:String x:Key="SeBrowse">Обзор</v:String>
+    <v:String x:Key="SeFailedToConnect">Не удалось подключиться</v:String>
+    <v:String x:Key="SeName">Имя</v:String>
+    <v:String x:Key="SeSize">Размер</v:String>
 </ResourceDictionary>

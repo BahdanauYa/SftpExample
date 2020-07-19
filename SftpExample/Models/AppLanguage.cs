@@ -17,10 +17,7 @@ namespace SftpExample.Models
         }
         
         public ObservableCollection<CultureInfo> Languages { get; }
-
-        //Евент для оповещения всех окон приложения
-        //public Action LanguageChanged;
-
+        
         public delegate void LanguageHandler(CultureInfo cultureInfo);
         public event LanguageHandler LanguageChanged;
 
