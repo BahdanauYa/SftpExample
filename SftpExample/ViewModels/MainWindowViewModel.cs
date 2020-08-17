@@ -35,6 +35,7 @@ namespace SftpExample.ViewModels
         private bool _messageWindowOpen;
         private DelegateCommand _selectAllFilesCmd;
         private DelegateCommand<FileDescription> _selectFileCmd;
+        private DelegateCommand<FileDescription> _toFolderCmd;
 
         public DelegateCommand<CultureInfo> ChangeLangCmd
         {
@@ -54,6 +55,11 @@ namespace SftpExample.ViewModels
         public DelegateCommand<FileDescription> SelectFileCmd
         {
             get { return _selectFileCmd ??= new DelegateCommand<FileDescription>(SelectFileCmd_EventHandler); }
+        }
+
+        public DelegateCommand<FileDescription> ToFolderCmd
+        {
+            get { return _toFolderCmd ??= new DelegateCommand<FileDescription>(ToFolderCmd_EventHandler); }
         }
 
         public AppLanguage Lang { get; set; }
@@ -124,6 +130,15 @@ namespace SftpExample.ViewModels
         private void SelectFileCmd_EventHandler(FileDescription file)
         {
             file.Selected = !file.Selected;
+        }
+
+        private void ToFolderCmd_EventHandler(FileDescription file)
+        {
+            if (file.IsDirectory)
+            {
+                Files.Clear();
+                CnManager.FillFileList(Files, file.FullFileName);
+            }
         }
 
         private void RefreshTitle()

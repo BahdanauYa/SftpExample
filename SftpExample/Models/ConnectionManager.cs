@@ -6,7 +6,7 @@ namespace SftpExample.Models
 {
     public class ConnectionManager:IDisposable
     {
-        private SftpClient Sftp { get; set; }
+        private SftpClient Sftp { get; }
         private string _host = "test.rebex.net";
         private string _username = "demo";
         private string _password = "password";
@@ -32,6 +32,17 @@ namespace SftpExample.Models
         internal void FillFileList(ObservableCollection<FileDescription> fList)
         {
             var temp = Sftp.ListDirectory(Sftp.WorkingDirectory);
+            foreach (var f in temp)
+            {
+                if (f.Name.StartsWith(".") && f.Name != "..") continue;
+
+                fList.Add(new FileDescription(f.FullName, f.Name, f.Length, f.IsDirectory));
+            }
+        }
+
+        internal void FillFileList(ObservableCollection<FileDescription> fList, string directory)
+        {
+            var temp = Sftp.ListDirectory(directory);
             foreach (var f in temp)
             {
                 if (f.Name.StartsWith(".") && f.Name != "..") continue;

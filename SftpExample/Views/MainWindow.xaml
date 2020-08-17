@@ -173,6 +173,43 @@
                         </Button>
                     </DataTemplate>
 
+                    <DataTemplate x:Key="NameDataTemplate" DataType="{x:Type models:FileDescription}">
+                        <Grid HorizontalAlignment="Stretch" Cursor="Hand">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <iconPacks:PackIconMaterial
+                                Width="25"
+                                Height="25"
+                                Margin="5"
+                                Foreground="#ffe892"
+                                Kind="Folder">
+                                <iconPacks:PackIconMaterial.Style>
+                                    <Style TargetType="iconPacks:PackIconMaterial">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDirectory}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </iconPacks:PackIconMaterial.Style>
+                            </iconPacks:PackIconMaterial>
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding Name}"
+                                TextWrapping="Wrap" />
+
+                            <b:Interaction.Triggers>
+                                <b:EventTrigger EventName="MouseDown">
+                                    <b:InvokeCommandAction Command="{Binding DataContext.ToFolderCmd, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}" CommandParameter="{Binding}" />
+                                </b:EventTrigger>
+                            </b:Interaction.Triggers>
+                        </Grid>
+                    </DataTemplate>
+
                     <DataTemplate x:Key="SizeCellDataTemplate" DataType="{x:Type models:FileDescription}">
                         <TextBlock>
                             <TextBlock.Style>
@@ -283,11 +320,12 @@
                         </DataGridTemplateColumn.HeaderTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn
+                    <DataGridTemplateColumn
                         MinWidth="150"
-                        Binding="{Binding Name}"
+                        CellTemplate="{StaticResource NameDataTemplate}"
                         Header="{StaticResource SeNameStatic}"
-                        HeaderStyle="{StaticResource HeaderStyle}" />
+                        HeaderStyle="{StaticResource HeaderStyle}"
+                        IsReadOnly="True" />
 
                     <DataGridTemplateColumn
                         CanUserResize="False"
