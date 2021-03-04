@@ -13,6 +13,7 @@
                 <!--  Theme setting  -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/light.cyan.xaml" />
 
+                <ResourceDictionary Source="Resources/Resources.xaml" />
                 <ResourceDictionary Source="Resources/lang.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

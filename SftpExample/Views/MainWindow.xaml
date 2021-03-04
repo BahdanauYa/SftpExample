@@ -8,7 +8,6 @@
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:SftpExample.Models"
-    xmlns:tools="clr-namespace:SftpExample.Tools"
     xmlns:viewModels="clr-namespace:SftpExample.ViewModels"
     Title="{Binding Title}"
     Width="600"
@@ -23,137 +22,25 @@
                 <ResourceDictionary Source="../Resources/lang.xaml" />
 
                 <ResourceDictionary>
-                    <tools:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-                    <tools:PrettyBytesConverter x:Key="PrettyBytesConverter" />
-
                     <TextBlock x:Key="SeNameStatic" Text="{DynamicResource SeName}" />
-
-                    <Style x:Key="DropDownButtonWindowCommandsStyle" TargetType="mah:DropDownButton">
-                        <Setter Property="Orientation" Value="Vertical" />
-                        <Setter Property="ArrowVisibility" Value="Collapsed" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                        <Setter Property="Opacity" Value="1" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Foreground" Value="White" />
-
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="BorderBrush" Value="Transparent" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-
-                    <Style x:Key="MenuItemStyle" TargetType="MenuItem">
-                        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=mah:MetroWindow}, Path=DataContext.ChangeLangCmd}" />
-                        <Setter Property="CommandParameter" Value="{Binding}" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <TextBlock Padding="5" Text="{Binding}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#33000000" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-
-                    <Style x:Key="FadedButtonStyle" TargetType="Button">
-                        <Setter Property="Margin" Value="6" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Accent}" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="Visibility" Value="Hidden" />
-                        <Setter Property="Content">
-                            <Setter.Value>
-                                <Rectangle Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
-                                    <Rectangle.OpacityMask>
-                                        <VisualBrush Stretch="Fill" Visual="{Binding Path=Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
-                                    </Rectangle.OpacityMask>
-                                </Rectangle>
-                            </Setter.Value>
-                        </Setter>
-
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Grid}}" Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                            <Trigger Property="Visibility" Value="Visible">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation
-                                                Storyboard.TargetProperty="Opacity"
-                                                From="0.0"
-                                                To="1.0"
-                                                Duration="0:0:0.5" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-
-                    <Style
-                        x:Key="SelectAllStyle"
-                        BasedOn="{StaticResource MahApps.Styles.Button.Flat}"
-                        TargetType="Button">
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.Accent}" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-
-                    <Style
-                        x:Key="SelectItemButtonCustomStyle"
-                        BasedOn="{StaticResource MahApps.Styles.Button.Flat}"
-                        TargetType="Button">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Padding" Value="0" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-
-                    <Style
-                        x:Key="HeaderStyle"
-                        BasedOn="{StaticResource MahApps.Styles.DataGridColumnHeader}"
-                        TargetType="DataGridColumnHeader">
-                        <Setter Property="Padding" Value="0" />
-                        <Setter Property="BorderThickness" Value="1,0,1,3" />
-                    </Style>
 
                     <DataTemplate x:Key="SelectCellDataTemplate" DataType="{x:Type models:FileDescription}">
                         <Button
                             Command="{Binding DataContext.SelectFileCmd, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}"
                             CommandParameter="{Binding}"
-                            Style="{StaticResource SelectItemButtonCustomStyle}">
+                            Style="{StaticResource SelectItemButtonStyle}">
                             <Grid>
                                 <iconPacks:PackIconMaterial
-                                    Height="15"
-                                    Margin="5"
+                                    Width="25"
+                                    Height="25"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Background="Transparent"
+                                    Kind="CheckboxBlankOutline" />
+                                <iconPacks:PackIconMaterial
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
                                     Foreground="Green"
-                                    Kind="Check">
+                                    Kind="CheckBold">
                                     <iconPacks:PackIconMaterial.Style>
                                         <Style TargetType="iconPacks:PackIconMaterial">
                                             <Style.Triggers>
@@ -163,22 +50,18 @@
                                             </Style.Triggers>
                                         </Style>
                                     </iconPacks:PackIconMaterial.Style>
-
                                 </iconPacks:PackIconMaterial>
-                                <iconPacks:PackIconMaterial
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Kind="CheckboxBlankOutline" />
                             </Grid>
                         </Button>
                     </DataTemplate>
 
                     <DataTemplate x:Key="NameDataTemplate" DataType="{x:Type models:FileDescription}">
-                        <Grid HorizontalAlignment="Stretch" Cursor="Hand">
+                        <Grid HorizontalAlignment="Stretch" Style="{StaticResource FileNameGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
+
                             <iconPacks:PackIconMaterial
                                 Width="25"
                                 Height="25"
@@ -200,7 +83,24 @@
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
                                 Text="{Binding Name}"
-                                TextWrapping="Wrap" />
+                                TextWrapping="Wrap">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding Mode=OneWay, Path=(models:FileDescription.IsDirectory)}" Value="True" />
+                                                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=(TextBlock.IsMouseOver)}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <MultiDataTrigger.Setters>
+                                                    <Setter Property="FontSize" Value="16" />
+                                                    <Setter Property="Foreground" Value="{StaticResource MahApps.Brushes.AccentBase}" />
+                                                </MultiDataTrigger.Setters>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
 
                             <b:Interaction.Triggers>
                                 <b:EventTrigger EventName="MouseDown">
@@ -217,7 +117,7 @@
                                     <Setter Property="Text" Value="{Binding Size, Converter={StaticResource PrettyBytesConverter}}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsDirectory}" Value="True">
-                                            <Setter Property="Text" Value="Папка" />
+                                            <Setter Property="Text" Value="{DynamicResource SeFolder}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -247,9 +147,9 @@
         <mah:WindowCommands ShowLastSeparator="True">
             <mah:DropDownButton
                 Content="{Binding Path=Lang.Language}"
-                ItemContainerStyle="{StaticResource MenuItemStyle}"
+                ItemContainerStyle="{StaticResource LangMenuItemStyle}"
                 ItemsSource="{Binding Lang.Languages}"
-                Style="{StaticResource DropDownButtonWindowCommandsStyle}" />
+                Style="{StaticResource LangDropDownButtonStyle}" />
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
 
@@ -299,9 +199,11 @@
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
                 CanUserReorderColumns="False"
+                CellStyle="{StaticResource CellStyle}"
                 ItemsSource="{Binding Files}"
                 SelectionMode="Extended"
-                SelectionUnit="FullRow">
+                SelectionUnit="Cell">
+
                 <DataGrid.Columns>
 
                     <DataGridTemplateColumn
@@ -315,17 +217,20 @@
                                 <Button
                                     Command="{Binding DataContext.SelectAllFilesCmd, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}"
                                     Content="{StaticResource SelectAllIcon}"
-                                    Style="{StaticResource SelectAllStyle}" />
+                                    Style="{StaticResource SelectAllButtonStyle}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                     </DataGridTemplateColumn>
 
                     <DataGridTemplateColumn
+                        Width="*"
                         MinWidth="150"
+                        CanUserSort="True"
                         CellTemplate="{StaticResource NameDataTemplate}"
                         Header="{StaticResource SeNameStatic}"
                         HeaderStyle="{StaticResource HeaderStyle}"
-                        IsReadOnly="True" />
+                        IsReadOnly="True"
+                        SortMemberPath="Name" />
 
                     <DataGridTemplateColumn
                         CanUserResize="False"

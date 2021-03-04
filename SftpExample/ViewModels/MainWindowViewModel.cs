@@ -65,8 +65,8 @@ namespace SftpExample.ViewModels
         public AppLanguage Lang { get; set; }
 
         public ObservableCollection<FileDescription> Files { get; set; }
-
-        private ConnectionManager CnManager { get; set; }
+        
+        private ConnectionManager CnManager { get; }
 
         public string Title
         {

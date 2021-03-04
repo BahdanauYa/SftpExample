@@ -2,7 +2,7 @@
 
 namespace SftpExample.Models
 {
-    public class FileDescription:BindableBase
+    public class FileDescription : BindableBase
     {
         private bool _selected;
 

@@ -9,4 +9,5 @@
     <v:String x:Key="SeFailedToConnect">Не удалось подключиться</v:String>
     <v:String x:Key="SeName">Имя</v:String>
     <v:String x:Key="SeSize">Размер</v:String>
+    <v:String x:Key="SeFolder">Папка</v:String>
 </ResourceDictionary>
