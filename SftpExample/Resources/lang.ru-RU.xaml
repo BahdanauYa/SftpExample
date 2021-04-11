@@ -10,4 +10,10 @@
     <v:String x:Key="SeName">Имя</v:String>
     <v:String x:Key="SeSize">Размер</v:String>
     <v:String x:Key="SeFolder">Папка</v:String>
+    <v:String x:Key="SeDownload">Скачать</v:String>
+    <v:String x:Key="SeSelectAll">Выбрать все</v:String>
+    <v:String x:Key="SeUsername">Имя пользователя</v:String>
+    <v:String x:Key="SePassword">Пароль</v:String>
+    <v:String x:Key="SeHost">Хост</v:String>
+    <v:String x:Key="SeReConnect">Подключиться</v:String>
 </ResourceDictionary>

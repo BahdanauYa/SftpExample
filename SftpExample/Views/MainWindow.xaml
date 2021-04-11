@@ -23,6 +23,7 @@
 
                 <ResourceDictionary>
                     <TextBlock x:Key="SeNameStatic" Text="{DynamicResource SeName}" />
+                    <TextBlock x:Key="SeSizeStatic" Text="{DynamicResource SeSize}" />
 
                     <DataTemplate x:Key="SelectCellDataTemplate" DataType="{x:Type models:FileDescription}">
                         <Button
@@ -111,7 +112,7 @@
                     </DataTemplate>
 
                     <DataTemplate x:Key="SizeCellDataTemplate" DataType="{x:Type models:FileDescription}">
-                        <TextBlock>
+                        <TextBlock VerticalAlignment="Center" TextAlignment="Center">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Text" Value="{Binding Size, Converter={StaticResource PrettyBytesConverter}}" />
@@ -125,19 +126,6 @@
                         </TextBlock>
                     </DataTemplate>
 
-                    <iconPacks:PackIconMaterial
-                        x:Key="FolderSearchIcon"
-                        Width="25"
-                        Height="25"
-                        Margin="5"
-                        Kind="FolderSearch" />
-
-                    <iconPacks:PackIconMaterial
-                        x:Key="SelectAllIcon"
-                        Margin="0"
-                        Kind="SelectionEllipse" />
-
-
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -145,6 +133,10 @@
 
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands ShowLastSeparator="True">
+            <Button
+                Command="{Binding ShowSettingsCmd}"
+                Content="{StaticResource SettingsIcon}"
+                Opacity="1" />
             <mah:DropDownButton
                 Content="{Binding Path=Lang.Language}"
                 ItemContainerStyle="{StaticResource LangMenuItemStyle}"
@@ -156,31 +148,82 @@
     <mah:MetroWindow.Flyouts>
         <mah:FlyoutsControl>
             <mah:Flyout
+                Width="200"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
+                IsOpen="{Binding SettingsIsOpen}"
+                Position="Left">
+                <Grid Margin="5" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Margin="5" Text="{DynamicResource SeHost}" />
+                    <TextBox Grid.Row="1" Text="{Binding CnManager.Host}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Margin="5"
+                        Text="{DynamicResource SeUsername}" />
+                    <TextBox Grid.Row="3" Text="{Binding CnManager.Username}" />
+                    <TextBlock
+                        Grid.Row="4"
+                        Margin="5"
+                        Text="{DynamicResource SePassword}" />
+                    <TextBox Grid.Row="5" Text="{Binding CnManager.Password}" />
+                    <Button
+                        Grid.Row="6"
+                        Margin="15"
+                        Command="{Binding ConnectCmd}"
+                        Content="{DynamicResource SeReConnect}" />
+                </Grid>
+            </mah:Flyout>
+
+            <mah:Flyout
                 Height="50"
                 CloseButtonVisibility="Collapsed"
-                IsOpen="{Binding MessageWindowOpen}"
+                IsOpen="{Binding MessageWindowIsOpen}"
                 Position="Bottom">
-                <TextBlock Text="{DynamicResource SeFailedToConnect}" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    Foreground="Red"
+                    Text="{DynamicResource SeFailedToConnect}" />
             </mah:Flyout>
         </mah:FlyoutsControl>
     </mah:MetroWindow.Flyouts>
 
-    <Grid>
+    <Grid IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Grid.Row="0">
             <TextBox
                 Margin="5"
                 mah:TextBoxHelper.AutoWatermark="True"
                 mah:TextBoxHelper.UseFloatingWatermark="True"
                 mah:TextBoxHelper.Watermark="{DynamicResource SeDest}"
-                BorderBrush="Black"
                 IsReadOnly="True"
                 Text="{Binding DestinationPath}"
-                TextWrapping="Wrap" />
+                TextWrapping="Wrap">
+                <TextBox.Style>
+                    <Style BasedOn="{StaticResource MahApps.Styles.TextBox}" TargetType="TextBox">
+                        <Setter Property="BorderBrush" Value="Black" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DestinationPath}" Value=" ">
+                                <Setter Property="BorderBrush" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
             <Button
                 HorizontalAlignment="Right"
                 Command="{Binding SelectDestinationCmd}"
@@ -199,6 +242,7 @@
                 CanUserAddRows="False"
                 CanUserDeleteRows="False"
                 CanUserReorderColumns="False"
+                CanUserResizeColumns="False"
                 CellStyle="{StaticResource CellStyle}"
                 ItemsSource="{Binding Files}"
                 SelectionMode="Extended"
@@ -217,7 +261,8 @@
                                 <Button
                                     Command="{Binding DataContext.SelectAllFilesCmd, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}"
                                     Content="{StaticResource SelectAllIcon}"
-                                    Style="{StaticResource SelectAllButtonStyle}" />
+                                    Style="{StaticResource SelectAllButtonStyle}"
+                                    ToolTip="{DynamicResource SeSelectAll}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>
                     </DataGridTemplateColumn>
@@ -233,22 +278,31 @@
                         SortMemberPath="Name" />
 
                     <DataGridTemplateColumn
+                        MinWidth="60"
                         CanUserResize="False"
                         CanUserSort="True"
                         CellTemplate="{StaticResource SizeCellDataTemplate}"
+                        Header="{StaticResource SeSizeStatic}"
                         HeaderStyle="{StaticResource HeaderStyle}"
-                        SortMemberPath="Size">
-
-                        <DataGridTemplateColumn.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Margin="5" Text="{DynamicResource SeSize}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.HeaderTemplate>
-                    </DataGridTemplateColumn>
+                        SortMemberPath="Size" />
                 </DataGrid.Columns>
 
             </DataGrid>
 
         </Grid>
+
+        <Button
+            Grid.Row="2"
+            Margin="3"
+            HorizontalAlignment="Stretch"
+            Command="{Binding DownloadCmd}"
+            Content="{DynamicResource SeDownload}"
+            Focusable="False"
+            Style="{StaticResource MahApps.Styles.Button.MetroSquare.Accent}" />
+
+        <mah:ProgressRing
+            Grid.Row="0"
+            Grid.RowSpan="3"
+            IsActive="{Binding IsBusy}" />
     </Grid>
 </mah:MetroWindow>

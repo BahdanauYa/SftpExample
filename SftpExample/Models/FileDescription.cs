@@ -5,6 +5,7 @@ namespace SftpExample.Models
     public class FileDescription : BindableBase
     {
         private bool _selected;
+        private bool _downloaded;
 
         public FileDescription(string fullFileName, string name, long size, bool isDirectory)
         {
@@ -22,11 +23,13 @@ namespace SftpExample.Models
         public bool Selected
         {
             get => _selected;
-            set
-            {
-                _selected = value;
-                RaisePropertyChanged();
-            }
+            set => SetProperty(ref _selected, value);
+        }
+
+        public bool Downloaded
+        {
+            get => _downloaded;
+            set => SetProperty(ref _downloaded, value);
         }
     }
 }

@@ -10,4 +10,10 @@
     <v:String x:Key="SeName">Name</v:String>
     <v:String x:Key="SeSize">Size</v:String>
     <v:String x:Key="SeFolder">Folder</v:String>
+    <v:String x:Key="SeDownload">Download</v:String>
+    <v:String x:Key="SeSelectAll">Select all</v:String>
+    <v:String x:Key="SeUsername">Username</v:String>
+    <v:String x:Key="SePassword">Password</v:String>
+    <v:String x:Key="SeHost">Host</v:String>
+    <v:String x:Key="SeReConnect">Reconnect</v:String>
 </ResourceDictionary>

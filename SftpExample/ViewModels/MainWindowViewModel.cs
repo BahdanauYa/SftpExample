@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -22,60 +24,79 @@ namespace SftpExample.ViewModels
             Lang.LanguageChanged += Lang_LanguageChanged;
 
             CnManager = new ConnectionManager();
-            MessageWindowOpen = !CnManager.Connect();
 
-            Files = new ObservableCollection<FileDescription>();
-            CnManager.FillFileList(Files);
+            ConnectCmdExecute();
         }
 
         private DelegateCommand<CultureInfo> _changeLangCmd;
         private string _title;
         private DelegateCommand _selectDestinationCmd;
         private string _destinationPath = " ";
-        private bool _messageWindowOpen;
+        private bool _messageWindowIsOpen;
         private DelegateCommand _selectAllFilesCmd;
         private DelegateCommand<FileDescription> _selectFileCmd;
         private DelegateCommand<FileDescription> _toFolderCmd;
+        private bool _isBusy;
+        private DelegateCommand _downloadCmd;
+        private ObservableCollection<FileDescription> _files = new ObservableCollection<FileDescription>();
+        private bool _settingsIsOpen;
+        private DelegateCommand _showSettingsCmd;
+        private DelegateCommand _connectCmd;
+
+        public DelegateCommand ConnectCmd
+        {
+            get { return _connectCmd ??= new DelegateCommand(ConnectCmdExecute); }
+        }
 
         public DelegateCommand<CultureInfo> ChangeLangCmd
         {
-            get { return _changeLangCmd ??= new DelegateCommand<CultureInfo>(ChangeLangCmd_EventHandler); }
+            get { return _changeLangCmd ??= new DelegateCommand<CultureInfo>(ChangeLangCmdExecute); }
         }
 
         public DelegateCommand SelectDestinationCmd
         {
-            get { return _selectDestinationCmd ??= new DelegateCommand(SelectDestinationCmd_EventHandler); }
+            get { return _selectDestinationCmd ??= new DelegateCommand(SelectDestinationCmdExecute); }
         }
 
         public DelegateCommand SelectAllFilesCmd
         {
-            get { return _selectAllFilesCmd ??= new DelegateCommand(SelectAllFilesCmd_EventHandler); }
+            get { return _selectAllFilesCmd ??= new DelegateCommand(SelectAllFilesCmdExecute); }
         }
 
         public DelegateCommand<FileDescription> SelectFileCmd
         {
-            get { return _selectFileCmd ??= new DelegateCommand<FileDescription>(SelectFileCmd_EventHandler); }
+            get { return _selectFileCmd ??= new DelegateCommand<FileDescription>(SelectFileCmdExecute); }
         }
 
         public DelegateCommand<FileDescription> ToFolderCmd
         {
-            get { return _toFolderCmd ??= new DelegateCommand<FileDescription>(ToFolderCmd_EventHandler); }
+            get { return _toFolderCmd ??= new DelegateCommand<FileDescription>(ToFolderCmdExecute, ToFolderCmdCanExecute); }
+        }
+
+        public DelegateCommand DownloadCmd
+        {
+            get { return _downloadCmd ??= new DelegateCommand(DownloadCmdExecuteAsync, DownloadCmdCanExecute); }
+        }
+
+        public DelegateCommand ShowSettingsCmd
+        {
+            get { return _showSettingsCmd ??= new DelegateCommand(ShowSettingsCmdExecute); }
         }
 
         public AppLanguage Lang { get; set; }
 
-        public ObservableCollection<FileDescription> Files { get; set; }
-        
-        private ConnectionManager CnManager { get; }
+        public ObservableCollection<FileDescription> Files
+        {
+            get => _files;
+            set => SetProperty(ref _files, value);
+        }
+
+        public ConnectionManager CnManager { get; }
 
         public string Title
         {
             get => _title;
-            set
-            {
-                _title = value;
-                RaisePropertyChanged();
-            }
+            set => SetProperty(ref _title, value);
         }
 
         public string DestinationPath
@@ -83,30 +104,51 @@ namespace SftpExample.ViewModels
             get => _destinationPath;
             set
             {
-                _destinationPath = value;
-                RaisePropertyChanged();
+                SetProperty(ref _destinationPath, value);
+                DownloadCmd.RaiseCanExecuteChanged();
             }
         }
 
-        public bool MessageWindowOpen
+        public bool IsBusy
         {
-            get => _messageWindowOpen;
-            set
-            {
-                _messageWindowOpen = value;
-                RaisePropertyChanged();
-            }
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
         }
 
+        public bool SettingsIsOpen
+        {
+            get => _settingsIsOpen;
+            set => SetProperty(ref _settingsIsOpen, value);
+        }
 
-        private void ChangeLangCmd_EventHandler(CultureInfo ci)
+        public bool MessageWindowIsOpen
+        {
+            get => _messageWindowIsOpen;
+            set => SetProperty(ref _messageWindowIsOpen, value);
+        }
+
+        private async void ConnectCmdExecute()
+        {
+            IsBusy = true;
+
+            await Task.Run(() =>
+            {
+                bool connected = CnManager.Connect();
+                MessageWindowIsOpen = !connected;
+                Files = connected ? CnManager.GetFiles() : new ObservableCollection<FileDescription>();
+            });
+            
+            IsBusy = false;
+        }
+
+        private void ChangeLangCmdExecute(CultureInfo ci)
         {
             if (ci != null)
                 if (!Equals(ci, Lang.Language))
                     Lang.Language = ci;
         }
 
-        private void SelectDestinationCmd_EventHandler()
+        private void SelectDestinationCmdExecute()
         {
             using var fbd = new FolderBrowserDialog();
             var result = fbd.ShowDialog();
@@ -117,28 +159,59 @@ namespace SftpExample.ViewModels
             }
         }
 
-        private void SelectAllFilesCmd_EventHandler()
+        private void SelectAllFilesCmdExecute()
         {
             var firstFile = Files.FirstOrDefault();
             bool selection = firstFile != null && firstFile.Selected;
             foreach (var f in Files)
-            {
                 f.Selected = !selection;
-            }
+
+            DownloadCmd.RaiseCanExecuteChanged();
         }
 
-        private void SelectFileCmd_EventHandler(FileDescription file)
+        private void SelectFileCmdExecute(FileDescription file)
         {
             file.Selected = !file.Selected;
+            DownloadCmd.RaiseCanExecuteChanged();
         }
 
-        private void ToFolderCmd_EventHandler(FileDescription file)
+        private async void ToFolderCmdExecute(FileDescription file)
         {
-            if (file.IsDirectory)
+            IsBusy = true;
+
+            await Task.Run(() =>
             {
-                Files.Clear();
-                CnManager.FillFileList(Files, file.FullFileName);
-            }
+                Files = CnManager.GetFiles(file.FullFileName);
+            });
+
+            IsBusy = false;
+        }
+
+        private async void DownloadCmdExecuteAsync()
+        {
+            IsBusy = true;
+            
+            await Task.Run(async () =>
+            {
+                await CnManager.DownloadAsync(Files, DestinationPath);
+            });
+
+            IsBusy = false;
+        }
+
+        private void ShowSettingsCmdExecute()
+        {
+            SettingsIsOpen = !SettingsIsOpen;
+        }
+
+        private bool ToFolderCmdCanExecute(FileDescription file)
+        {
+            return file.IsDirectory;
+        }
+
+        private bool DownloadCmdCanExecute()
+        {
+            return (Files.Any(f => f.Selected) && Directory.Exists(DestinationPath));
         }
 
         private void RefreshTitle()

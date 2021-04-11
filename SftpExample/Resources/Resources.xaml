@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:models="clr-namespace:SftpExample.Models"
     xmlns:tools="clr-namespace:SftpExample.Tools"
@@ -8,6 +9,23 @@
 
     <tools:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     <tools:PrettyBytesConverter x:Key="PrettyBytesConverter" />
+
+    <iconPacks:PackIconMaterial
+        x:Key="FolderSearchIcon"
+        Width="25"
+        Height="25"
+        Margin="5"
+        Kind="FolderSearch" />
+
+    <iconPacks:PackIconMaterial
+        x:Key="SelectAllIcon"
+        Margin="0"
+        Kind="SelectionEllipse" />
+
+    <iconPacks:PackIconMaterial
+        x:Key="SettingsIcon"
+        Margin="0"
+        Kind="Cog" />
 
     <Style x:Key="FileNameGridStyle" TargetType="Grid">
         <Style.Triggers>
@@ -25,6 +43,9 @@
                 <Setter Property="Background" Value="{x:Null}" />
                 <Setter Property="BorderBrush" Value="{x:Null}" />
             </Trigger>
+            <DataTrigger Binding="{Binding Downloaded}" Value="True">
+                <Setter Property="Background" Value="LightGreen" />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
