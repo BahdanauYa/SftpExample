@@ -34,7 +34,7 @@ namespace SftpExample.Models
             set => SetProperty(ref _password, value);
         }
 
-        internal bool Connect()
+        public bool Connect()
         {
             try
             {
@@ -49,7 +49,7 @@ namespace SftpExample.Models
             }
         }
 
-        internal ObservableCollection<FileDescription> GetFiles(string directory = null)
+        public ObservableCollection<FileDescription> GetFiles(string directory = null)
         {
             if (directory == null) directory = Sftp.WorkingDirectory;
 
@@ -66,7 +66,7 @@ namespace SftpExample.Models
             return fList;
         }
 
-        internal async Task DownloadAsync(ObservableCollection<FileDescription> fList, string destinationPath)
+        public async Task DownloadAsync(ObservableCollection<FileDescription> fList, string destinationPath)
         {
             foreach (var f in fList)
             {
